@@ -2,7 +2,7 @@ import asyncio
 import logging
 import re
 import sys
-
+import configparser
 from aiogram import Bot, Dispatcher
 from aiogram import F
 from aiogram import types
@@ -137,7 +137,10 @@ async def main() -> None:
     """
     Запуск бота
     """
-    bot = Bot(token='6290742420:AAFGuLaPnoCfVtJAindxeqZ2ZUegHA88e4E')
+    config = configparser.ConfigParser(empty_lines_in_values=False, allow_no_value=True)
+    config.read("setting/config.ini")  # Чтение файла
+    bot_token = config.get('BOT_TOKEN', 'BOT_TOKEN')  # Получение токена
+    bot = Bot(token=bot_token)
     await dp.start_polling(bot)
 
 
