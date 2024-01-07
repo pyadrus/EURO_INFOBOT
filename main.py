@@ -8,7 +8,7 @@ from aiogram import F
 from aiogram import types
 from aiogram.filters import ChatMemberUpdatedFilter, IS_NOT_MEMBER, IS_MEMBER
 from aiogram.types import ChatMemberUpdated
-from loguru import logger
+from loguru import logger  # https://github.com/Delgan/loguru
 
 dp = Dispatcher()
 logging.basicConfig(level=logging.INFO)
@@ -16,6 +16,8 @@ logging.basicConfig(level=logging.INFO)
 phone_number_pattern = re.compile(r'(\+?\d{1,3}[-\s]?\d{3,4}[-\s]?\d{2,4}[-\s]?\d{2,4})')
 
 allowed_user_ids = [53518551]
+
+logger.add("log/log.log")
 
 
 @dp.chat_member(ChatMemberUpdatedFilter(IS_NOT_MEMBER >> IS_MEMBER))
@@ -25,8 +27,9 @@ async def on_user_join(event: ChatMemberUpdated):
     IS_NOT_MEMBER >> IS_MEMBER - новый участник
     IS_MEMBER >> IS_NOT_MEMBER - покинул группу участник группы
     """
-    print(f'Пользователь: Имя - {event.new_chat_member.user.first_name} {event.new_chat_member.user.last_name} '
-          f'username - {event.new_chat_member.user.username} id - {event.new_chat_member.user.id} вступил в группу.')
+    logger.info(f'Пользователь: Имя - {event.new_chat_member.user.first_name} {event.new_chat_member.user.last_name} '
+                f'username - {event.new_chat_member.user.username} id - {event.new_chat_member.user.id} '
+                f'вступил в группу.')
 
 
 @dp.message(F.new_chat_members)
@@ -84,7 +87,7 @@ async def any_message(message: types.Message):
                     await warning_url.delete()  # Удаляем предупреждение от бота
                     logger.info(f'Системное сообщения от бота удалено')
         except Exception as e:
-            logger.info(f'Возникла ошибка {e}. В сообщении {message.text} от {message.from_user.username} '
+            logger.info(f'Возникла ошибка {e}, так как в сообщении {message.text} от {message.from_user.username} '
                         f'{message.from_user.id} нет ссылки')
 
 
@@ -126,11 +129,14 @@ async def edit_message(message: types.Message):
                     await warning_url.delete()  # Удаляем предупреждение от бота
                     logger.info(f'Системное сообщения от бота удалено')
         except Exception as e:
-            logger.info(f'Возникла ошибка {e}. В сообщении {message.text} от {message.from_user.username} '
+            logger.info(f'Возникла ошибка {e}, так как в сообщении {message.text} от {message.from_user.username} '
                         f'{message.from_user.id} нет ссылки')
 
 
 async def main() -> None:
+    """
+    Запуск бота
+    """
     bot = Bot(token='6290742420:AAFGuLaPnoCfVtJAindxeqZ2ZUegHA88e4E')
     await dp.start_polling(bot)
 
